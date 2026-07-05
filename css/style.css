@@ -643,7 +643,7 @@ img {
 .gallery-item {
   position: relative;
   display: block;
-  border-radius: 20px;
+  border-radius: -2x;
   overflow: hidden;
   background: #111;
   box-shadow: 0 18px 52px rgba(0, 0, 0, .10);

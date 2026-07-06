@@ -13,10 +13,14 @@
   --border: rgba(17, 17, 17, .10);
   --border-light: rgba(255, 255, 255, .13);
   --shadow: 0 22px 70px rgba(0, 0, 0, .14);
+  --shadow-soft: 0 14px 38px rgba(0, 0, 0, .08);
   --radius: 22px;
+  --header-height: 82px;
 }
 
-/* GENEL TAŞMA KORUMASI */
+/* ===============================
+   GENEL TAŞMA / HİZALAMA KORUMASI
+================================ */
 *,
 *::before,
 *::after {
@@ -29,6 +33,7 @@ html {
   min-width: 320px;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  scroll-padding-top: 92px;
 }
 
 body {
@@ -63,9 +68,25 @@ footer {
   overflow-x: clip;
 }
 
+@supports not (overflow-x: clip) {
+  main,
+  section,
+  footer {
+    overflow-x: hidden;
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
 }
 
 img,
@@ -87,7 +108,11 @@ img {
 }
 
 .row {
-  max-width: 100%;
+  min-width: 0;
+}
+
+.row > * {
+  min-width: 0;
 }
 
 ::selection {
@@ -95,7 +120,9 @@ img {
   background: var(--gold);
 }
 
-/* FONT */
+/* ===============================
+   FONT
+================================ */
 h1,
 h2,
 h3,
@@ -109,7 +136,25 @@ h6,
   font-family: "Manrope", "Inter", Arial, sans-serif;
 }
 
-/* LOADER */
+p {
+  overflow-wrap: break-word;
+}
+
+/* ===============================
+   ERİŞİLEBİLİRLİK
+================================ */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(231, 178, 60, .55);
+  outline-offset: 3px;
+}
+
+/* ===============================
+   LOADER
+================================ */
 .page-loader {
   position: fixed;
   inset: 0;
@@ -140,12 +185,18 @@ h6,
   }
 }
 
-/* BUTTON */
+/* ===============================
+   BUTTON
+================================ */
 .btn {
   border-radius: 999px;
   font-weight: 800;
   letter-spacing: -.01em;
   padding: .76rem 1.08rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   transition: transform .24s ease, box-shadow .24s ease, background .24s ease, border-color .24s ease;
 }
 
@@ -184,7 +235,9 @@ h6,
   border-color: #242424;
 }
 
-/* HEADER */
+/* ===============================
+   HEADER
+================================ */
 .site-header {
   width: 100%;
   max-width: 100%;
@@ -196,6 +249,7 @@ h6,
   padding: 7px 0;
   background: rgba(5, 5, 5, .88);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   box-shadow: 0 18px 48px rgba(0, 0, 0, .18);
 }
 
@@ -299,6 +353,7 @@ h6,
   border: 1px solid rgba(255, 255, 255, .25);
   border-radius: 14px;
   padding: .58rem;
+  box-shadow: none !important;
 }
 
 .nav-social {
@@ -320,7 +375,9 @@ h6,
   transform: translateY(-2px);
 }
 
-/* HERO */
+/* ===============================
+   HERO
+================================ */
 .hero-section {
   position: relative;
   width: 100%;
@@ -434,6 +491,7 @@ h6,
   overflow: hidden;
   background: rgba(255, 255, 255, .06);
   backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .hero-stats div {
@@ -469,6 +527,7 @@ h6,
   border: 1px solid rgba(255, 255, 255, .13);
   background: rgba(10, 16, 20, .68);
   backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   box-shadow: var(--shadow);
 }
 
@@ -538,7 +597,9 @@ h6,
   }
 }
 
-/* SECTION */
+/* ===============================
+   SECTION
+================================ */
 main > section:not(.hero-section) {
   position: relative;
   border-top: 1px solid rgba(17, 17, 17, .055);
@@ -593,7 +654,9 @@ main > section:not(.hero-section) {
   line-height: 1.78;
 }
 
-/* MINI FEATURE */
+/* ===============================
+   MINI FEATURE
+================================ */
 .mini-feature {
   display: flex;
   align-items: center;
@@ -612,7 +675,9 @@ main > section:not(.hero-section) {
   font-size: 1.24rem;
 }
 
-/* ABOUT */
+/* ===============================
+   ABOUT
+================================ */
 .about-visual-section {
   position: relative;
 }
@@ -675,7 +740,9 @@ main > section:not(.hero-section) {
   color: var(--gold-dark);
 }
 
-/* SERVICES */
+/* ===============================
+   SERVICES
+================================ */
 .services-grid {
   counter-reset: service;
 }
@@ -746,7 +813,9 @@ main > section:not(.hero-section) {
   font-weight: 800;
 }
 
-/* PROCESS */
+/* ===============================
+   PROCESS
+================================ */
 .process-section {
   position: relative;
   overflow: hidden;
@@ -793,7 +862,9 @@ main > section:not(.hero-section) {
   margin: 0;
 }
 
-/* GALLERY */
+/* ===============================
+   GALLERY
+================================ */
 .gallery-item {
   position: relative;
   display: block;
@@ -837,7 +908,9 @@ main > section:not(.hero-section) {
   filter: saturate(1.16) contrast(1.05);
 }
 
-/* APPOINTMENT */
+/* ===============================
+   APPOINTMENT
+================================ */
 .appointment-section {
   background: linear-gradient(180deg, #f5f5f2 0%, #fff 100%);
 }
@@ -907,7 +980,9 @@ textarea.form-control {
   color: #067647;
 }
 
-/* CONTACT */
+/* ===============================
+   CONTACT
+================================ */
 .contact-section {
   background: #eeeeeb;
 }
@@ -1013,7 +1088,9 @@ textarea.form-control {
   min-height: 280px;
 }
 
-/* FOOTER */
+/* ===============================
+   FOOTER
+================================ */
 .footer {
   padding: 72px 0 28px;
   color: #fff;
@@ -1096,11 +1173,13 @@ textarea.form-control {
   font-size: .88rem;
 }
 
-/* FLOATING */
+/* ===============================
+   FLOATING
+================================ */
 .floating-actions {
   position: fixed;
-  right: 20px;
-  bottom: 22px;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(22px, env(safe-area-inset-bottom));
   z-index: 60;
   display: grid;
   gap: 10px;
@@ -1138,8 +1217,8 @@ textarea.form-control {
 
 .back-to-top {
   position: fixed;
-  right: 20px;
-  bottom: 198px;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: calc(max(22px, env(safe-area-inset-bottom)) + 176px);
   z-index: 60;
   opacity: 0;
   visibility: hidden;
@@ -1151,11 +1230,13 @@ textarea.form-control {
   visibility: visible;
 }
 
-/* COOKIE */
+/* ===============================
+   COOKIE
+================================ */
 .cookie-box {
   position: fixed;
-  left: 20px;
-  bottom: 20px;
+  left: max(20px, env(safe-area-inset-left));
+  bottom: max(20px, env(safe-area-inset-bottom));
   z-index: 70;
   display: none;
   max-width: 360px;
@@ -1173,7 +1254,9 @@ textarea.form-control {
   font-weight: 650;
 }
 
-/* GALLERY MODAL */
+/* ===============================
+   GALLERY MODAL
+================================ */
 .gallery-modal {
   position: fixed;
   inset: 0;
@@ -1204,7 +1287,9 @@ textarea.form-control {
   color: #fff;
 }
 
-/* ANIMATION */
+/* ===============================
+   ANIMATION
+================================ */
 .reveal {
   opacity: 0;
   transform: translateY(30px);
@@ -1236,7 +1321,9 @@ textarea.form-control {
   transition-delay: .40s;
 }
 
-/* RESPONSIVE */
+/* ===============================
+   LARGE RESPONSIVE
+================================ */
 @media (max-width: 1199.98px) {
   .hero-title {
     font-size: clamp(2.55rem, 5.8vw, 4.8rem);
@@ -1247,11 +1334,19 @@ textarea.form-control {
   }
 }
 
+/* ===============================
+   TABLET RESPONSIVE
+================================ */
 @media (max-width: 991.98px) {
+  html {
+    scroll-padding-top: 84px;
+  }
+
   .site-header {
     padding: 8px 0;
     background: rgba(5, 5, 5, .92);
     backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   .navbar {
@@ -1279,6 +1374,7 @@ textarea.form-control {
     border-radius: 18px;
     background: rgba(14, 14, 14, .98);
     border: 1px solid rgba(255, 255, 255, .10);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, .28);
   }
 
   .navbar .nav-link {
@@ -1337,7 +1433,14 @@ textarea.form-control {
   }
 }
 
+/* ===============================
+   MOBILE RESPONSIVE
+================================ */
 @media (max-width: 767.98px) {
+  html {
+    scroll-padding-top: 82px;
+  }
+
   .container,
   .container-fluid {
     padding-left: 16px;
@@ -1377,6 +1480,12 @@ textarea.form-control {
   .hero-bg {
     background-position: center;
     transform: none;
+  }
+
+  .hero-gradient {
+    background:
+      radial-gradient(circle at 16% 18%, rgba(231, 178, 60, .45), transparent 34%),
+      linear-gradient(180deg, rgba(0, 0, 0, .86) 0%, rgba(0, 0, 0, .70) 46%, rgba(0, 0, 0, .42) 100%);
   }
 
   .eyebrow,
@@ -1452,6 +1561,14 @@ textarea.form-control {
     padding: 48px 0;
   }
 
+  .section-head {
+    margin-bottom: 30px;
+  }
+
+  .mini-feature {
+    min-height: auto;
+  }
+
   .service-card {
     min-height: auto;
     padding: 24px;
@@ -1468,6 +1585,21 @@ textarea.form-control {
     justify-content: center;
   }
 
+  .contact-card > div {
+    gap: 12px;
+  }
+
+  .contact-card i {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 14px;
+  }
+
+  .footer {
+    padding-top: 60px;
+  }
+
   .footer-brand .brand-copy small {
     white-space: normal;
   }
@@ -1477,8 +1609,8 @@ textarea.form-control {
   }
 
   .floating-actions {
-    right: 12px;
-    bottom: 12px;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
   }
 
   .floating-actions a,
@@ -1488,18 +1620,21 @@ textarea.form-control {
   }
 
   .back-to-top {
-    right: 12px;
-    bottom: 176px;
+    right: max(12px, env(safe-area-inset-right));
+    bottom: calc(max(12px, env(safe-area-inset-bottom)) + 164px);
   }
 
   .cookie-box {
-    left: 14px;
-    right: 14px;
-    bottom: 14px;
+    left: max(14px, env(safe-area-inset-left));
+    right: max(14px, env(safe-area-inset-right));
+    bottom: max(14px, env(safe-area-inset-bottom));
     max-width: none;
   }
 }
 
+/* ===============================
+   SMALL MOBILE
+================================ */
 @media (max-width: 575.98px) {
   .map-box iframe {
     min-height: 240px;
@@ -1513,6 +1648,21 @@ textarea.form-control {
     left: 16px;
     bottom: 16px;
     font-size: .95rem;
+  }
+
+  .gallery-modal {
+    padding: 14px;
+  }
+
+  .gallery-modal img {
+    max-width: 94vw;
+    max-height: 80vh;
+    border-radius: 16px;
+  }
+
+  .gallery-close {
+    right: 14px;
+    top: 14px;
   }
 }
 
@@ -1535,6 +1685,10 @@ textarea.form-control {
 
   .brand-copy small {
     font-size: .52rem;
+  }
+
+  .section-padding {
+    padding: 58px 0;
   }
 }
 
@@ -1562,10 +1716,41 @@ textarea.form-control {
     width: 37px;
     height: 37px;
   }
+
+  .container,
+  .container-fluid,
+  .site-header .container-xl {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
-/* HAREKET AZALTMA */
+/* ===============================
+   TOUCH CİHAZLARDA HAFİFLETME
+================================ */
+@media (hover: none) {
+  .btn:hover,
+  .service-card:hover,
+  .gallery-item:hover img,
+  .floating-actions a:hover,
+  .back-to-top:hover,
+  .nav-social:hover {
+    transform: none;
+  }
+
+  .gallery-item:hover img {
+    filter: none;
+  }
+}
+
+/* ===============================
+   HAREKET AZALTMA
+================================ */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
   *,
   *::before,
   *::after {
@@ -1573,5 +1758,15 @@ textarea.form-control {
     animation-iteration-count: 1 !important;
     transition-duration: .001ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .hero-bg {
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
   }
 }

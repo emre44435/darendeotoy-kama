@@ -3,18 +3,46 @@
 
   const WHATSAPP_PHONE = "905452838133";
   const MOBILE_BREAKPOINT = 992;
-  const HEADER_OFFSET = 78;
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   let ticking = false;
   let resizeTimer = null;
+  let counterStarted = false;
+
+  const $window = $(window);
+  const $document = $(document);
+  const $body = $("body");
 
   function isMobile() {
     return window.innerWidth < MOBILE_BREAKPOINT;
   }
 
+  function getHeaderOffset() {
+    const headerHeight = $(".site-header").outerHeight() || 76;
+    return headerHeight + 12;
+  }
+
+  function safeGetStorage(key) {
+    try {
+      return localStorage.getItem(key);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function safeSetStorage(key, value) {
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      return false;
+    }
+
+    return true;
+  }
+
   function setHeaderState() {
-    if ($(window).scrollTop() > 30) {
+    if ($window.scrollTop() > 24) {
       $(".site-header").addClass("scrolled");
     } else {
       $(".site-header").removeClass("scrolled");
@@ -22,7 +50,7 @@
   }
 
   function setActiveMenu() {
-    const scrollPos = $(window).scrollTop() + 130;
+    const scrollPos = $window.scrollTop() + getHeaderOffset() + 55;
     let currentId = "home";
 
     $("main section[id]").each(function () {
@@ -46,24 +74,34 @@
     if (!$heroBg.length) return;
 
     if (isMobile() || prefersReducedMotion) {
-      $heroBg.css("transform", "none");
+      $heroBg.css({
+        transform: "none",
+        willChange: "auto"
+      });
       return;
     }
 
-    const scrolled = $(window).scrollTop();
+    const scrolled = $window.scrollTop();
     const speed = parseFloat($heroBg.data("speed")) || 0.15;
-    const maxScroll = $(window).height() + 140;
+    const maxScroll = $window.height() + 160;
 
     if (scrolled < maxScroll) {
-      $heroBg.css(
-        "transform",
-        "translate3d(0," + scrolled * speed + "px,0) scale(1.04)"
-      );
+      $heroBg.css({
+        transform: "translate3d(0," + scrolled * speed + "px,0) scale(1.04)",
+        willChange: "transform"
+      });
+    } else {
+      $heroBg.css("willChange", "auto");
     }
   }
 
   function revealOnScroll() {
-    const windowBottom = $(window).scrollTop() + $(window).height() * 0.88;
+    if (prefersReducedMotion) {
+      $(".reveal").addClass("visible");
+      return;
+    }
+
+    const windowBottom = $window.scrollTop() + $window.height() * 0.9;
 
     $(".reveal").each(function () {
       const $item = $(this);
@@ -77,12 +115,17 @@
   }
 
   function runCounters() {
-    $("[data-counter]").each(function () {
+    if (counterStarted) return;
+
+    const $counters = $("[data-counter]");
+    if (!$counters.length) return;
+
+    $counters.each(function () {
       const $this = $(this);
 
       if ($this.data("counted")) return;
 
-      const triggerPoint = $(window).scrollTop() + $(window).height() * 0.92;
+      const triggerPoint = $window.scrollTop() + $window.height() * 0.92;
 
       if ($this.offset().top > triggerPoint) return;
 
@@ -95,7 +138,7 @@
       $({ countNum: 0 }).animate(
         { countNum: target },
         {
-          duration: prefersReducedMotion ? 1 : 1200,
+          duration: prefersReducedMotion ? 1 : 1100,
           easing: "swing",
           step: function () {
             const value = Math.floor(this.countNum);
@@ -107,10 +150,18 @@
         }
       );
     });
+
+    const completed = $counters.filter(function () {
+      return $(this).data("counted") === true;
+    }).length;
+
+    if (completed === $counters.length) {
+      counterStarted = true;
+    }
   }
 
   function backToTopState() {
-    if ($(window).scrollTop() > 550) {
+    if ($window.scrollTop() > 520) {
       $(".back-to-top").addClass("show");
     } else {
       $(".back-to-top").removeClass("show");
@@ -126,15 +177,20 @@
       bootstrap.Collapse.getOrCreateInstance(navbar).hide();
     } else {
       $(navbar).removeClass("show");
+      $('.navbar-toggler[aria-controls="mainNavbar"]').attr("aria-expanded", "false");
     }
   }
 
+  function cleanText(value) {
+    return $.trim(String(value || "").replace(/\s+/g, " "));
+  }
+
   function buildWhatsappMessage() {
-    const name = $.trim($("#name").val());
-    const phone = $.trim($("#phone").val());
-    const service = $("#service").val();
-    const date = $("#date").val();
-    const message = $.trim($("#message").val());
+    const name = cleanText($("#name").val());
+    const phone = cleanText($("#phone").val());
+    const service = cleanText($("#service").val());
+    const date = cleanText($("#date").val());
+    const message = cleanText($("#message").val());
 
     return [
       "Merhaba Diamond Oto ve Halı Yıkama, randevu almak istiyorum.",
@@ -172,13 +228,13 @@
 
     if (!$target.length) return;
 
-    const targetTop = $target.offset().top - HEADER_OFFSET;
+    const targetTop = $target.offset().top - getHeaderOffset();
 
     $("html, body").stop().animate(
       {
         scrollTop: Math.max(targetTop, 0)
       },
-      prefersReducedMotion ? 1 : 650,
+      prefersReducedMotion ? 1 : 620,
       "swing"
     );
   }
@@ -187,46 +243,68 @@
     const $modal = $(".gallery-modal");
     const $modalImg = $(".gallery-modal img");
 
-    if (!$modal.length || !$modalImg.length) return;
+    if (!$modal.length || !$modalImg.length || !src) return;
 
-    $modalImg.attr("src", src).attr("alt", alt || "Diamond galeri görseli");
-    $modal.css("display", "flex").hide().fadeIn(180).attr("aria-hidden", "false");
-    $("body").addClass("no-scroll");
+    $modalImg.attr({
+      src: src,
+      alt: alt || "Diamond galeri görseli"
+    });
+
+    $modal
+      .css("display", "flex")
+      .hide()
+      .fadeIn(prefersReducedMotion ? 1 : 180)
+      .attr("aria-hidden", "false");
+
+    $body.addClass("no-scroll");
   }
 
   function closeGalleryModal() {
     const $modal = $(".gallery-modal");
 
-    if (!$modal.length) return;
+    if (!$modal.length || $modal.attr("aria-hidden") === "true") return;
 
-    $modal.fadeOut(180, function () {
-      $(".gallery-modal img").attr("src", "");
+    $modal.fadeOut(prefersReducedMotion ? 1 : 180, function () {
+      $(".gallery-modal img").attr({
+        src: "",
+        alt: "Galeri büyük görsel"
+      });
+
+      $modal.attr("aria-hidden", "true");
     });
 
-    $modal.attr("aria-hidden", "true");
-    $("body").removeClass("no-scroll");
+    $body.removeClass("no-scroll");
   }
 
   function initCookieBox() {
-    if (localStorage.getItem("diamondCookieAccepted") !== "yes") {
+    const $cookieBox = $(".cookie-box");
+    const $cookieButton = $("#cookieAccept");
+
+    if (!$cookieBox.length || !$cookieButton.length) return;
+
+    if (safeGetStorage("diamondCookieAccepted") !== "yes") {
       setTimeout(function () {
-        $(".cookie-box").fadeIn(220);
+        $cookieBox.fadeIn(prefersReducedMotion ? 1 : 220);
       }, 900);
     }
 
-    $("#cookieAccept").on("click", function () {
-      localStorage.setItem("diamondCookieAccepted", "yes");
-      $(".cookie-box").fadeOut(220);
+    $cookieButton.on("click", function () {
+      safeSetStorage("diamondCookieAccepted", "yes");
+      $cookieBox.fadeOut(prefersReducedMotion ? 1 : 220);
     });
   }
 
   function initAppointmentForm() {
-    $("#appointmentForm").on("submit", function (event) {
+    const $form = $("#appointmentForm");
+
+    if (!$form.length) return;
+
+    $form.on("submit", function (event) {
       event.preventDefault();
 
-      const name = $.trim($("#name").val());
-      const phone = $.trim($("#phone").val());
-      const service = $("#service").val();
+      const name = cleanText($("#name").val());
+      const phone = cleanText($("#phone").val());
+      const service = cleanText($("#service").val());
       const $messageBox = $(".form-message");
 
       if (!name || !phone || !service) {
@@ -234,6 +312,7 @@
           .removeClass("success")
           .addClass("error")
           .text("Lütfen ad soyad, telefon ve hizmet seçimi alanlarını doldurun.");
+
         return;
       }
 
@@ -245,7 +324,11 @@
         .addClass("success")
         .text("WhatsApp açılıyor, randevu mesajınız hazırlandı.");
 
-      window.open(url, "_blank", "noopener,noreferrer");
+      const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+
+      if (newWindow) {
+        newWindow.opener = null;
+      }
     });
   }
 
@@ -255,8 +338,6 @@
 
       const src = $(this).attr("href");
       const alt = $(this).find("img").attr("alt") || "Diamond galeri görseli";
-
-      if (!src) return;
 
       openGalleryModal(src, alt);
     });
@@ -272,7 +353,7 @@
       }
     });
 
-    $(document).on("keyup", function (event) {
+    $document.on("keyup", function (event) {
       if (event.key === "Escape") {
         closeGalleryModal();
       }
@@ -297,27 +378,40 @@
     $(".back-to-top").on("click", function () {
       $("html, body").stop().animate(
         { scrollTop: 0 },
-        prefersReducedMotion ? 1 : 650
+        prefersReducedMotion ? 1 : 620,
+        "swing"
       );
     });
   }
 
   function initResizeHandler() {
-    $(window).on("resize orientationchange", function () {
+    $window.on("resize orientationchange", function () {
       clearTimeout(resizeTimer);
 
       resizeTimer = setTimeout(function () {
         parallaxHero();
         setActiveMenu();
+        revealOnScroll();
       }, 180);
     });
   }
 
-  $(window).on("load", function () {
+  function initPassiveScroll() {
+    window.addEventListener("scroll", requestScrollUpdate, { passive: true });
+  }
+
+  function initPageLoader() {
     setTimeout(function () {
       $(".page-loader").addClass("loaded");
     }, 250);
 
+    setTimeout(function () {
+      $(".page-loader").remove();
+    }, 900);
+  }
+
+  $window.on("load", function () {
+    initPageLoader();
     runScrollTasks();
   });
 
@@ -326,8 +420,7 @@
 
     runScrollTasks();
 
-    $(window).on("scroll", requestScrollUpdate);
-
+    initPassiveScroll();
     initNavigation();
     initGallery();
     initAppointmentForm();

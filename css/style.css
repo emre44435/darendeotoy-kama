@@ -1511,3 +1511,38 @@ main>section:not(.hero-section) {
     font-size: .86rem;
   }
 }
+.map-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: #b47a08;
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.map-link:hover {
+  color: #111;
+}
+
+.map-box {
+  width: 100%;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,.08);
+  box-shadow: 0 18px 45px rgba(0,0,0,.10);
+  background: #fff;
+}
+
+.map-box iframe {
+  display: block;
+  width: 100%;
+  min-height: 280px;
+}
+
+@media (max-width: 575px) {
+  .map-box iframe {
+    min-height: 240px;
+  }
+}

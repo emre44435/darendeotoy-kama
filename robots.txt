@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://xn--darendeotoykama-ilc.site/sitemap.xml
+Sitemap: https://darendeotoyıkama.site/sitemap.xml
